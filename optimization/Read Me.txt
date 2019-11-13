@@ -1,0 +1,5 @@
+This is the  optimization version on calculation acoustic intensity distribution in XZ-plane in order to cut down the calculation time. 
+2019/11/13 
+ rayleigh_2D_2 This is the first optimization version, which changes the coordinate grid. In this version, the lowest and highest value along th X-axis are -a and zero.
+
+rayleigh_2D_3 This is the second optimization version, in which I only  use one for-loop.
