@@ -2,13 +2,15 @@
 %的rayleigh积分，对比声强分布的误差
 clc;
 clear all;
+profile on;
+
 f0=1e6;u=1;%定义频率和法向阵速
 medium = set_medium('lossless');%定义介质（单层：水），可以改成多层set_layered_medium
 lambda = medium.soundspeed/f0;%波长=c/f
 k=2*pi/lambda;%波数
 
-R = 1 * 5 * 2 * lambda;%ROC曲率半径
-a = 1 * 5 * lambda;%注意这里的a是孔径的一半
+R = 4 * 5 * 2 * lambda;%ROC曲率半径
+a = 4 * 5 * lambda;%注意这里的a是孔径的一半
 fnumber=R/(2*a);%所以f-number=曲率半径/孔径（2*a）
 d = sqrt(R^2 - a^2);%理论焦点到孔径中心的距离
 
@@ -153,3 +155,6 @@ plot(error_dSi);
 xlabel('ith ring ');
 ylabel('error ');
 title('error between the sum of dS and theory calculation');
+
+profile viewer;
+
