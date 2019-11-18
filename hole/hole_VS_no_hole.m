@@ -2,12 +2,12 @@
 clear all;
 f0=1e6;%定义频率和声功率
 P=100;
-n=8;
+n=4*1.5;
 medium = set_medium('lossless');%定义介质（单层：水），可以改成多层set_layered_medium
 lambda = medium.soundspeed/f0;%波长=c/f
 k=2*pi/lambda;%波数
-R = n * 5 * 2 * lambda;%ROC曲率半径
-a = n * 5 * lambda;%注意这里的a是孔径的一半
+R = 4 * 5 * 2 * lambda;%ROC曲率半径
+a = 4 * 5 * lambda;%注意这里的a是孔径的一半
 fnumber=R/(2*a);%所以f-number=曲率半径/孔径（2*a）
 d = sqrt(R^2 - a^2);%理论焦点到孔径中心的距离
 
@@ -140,26 +140,6 @@ range_value_xz_hole=range_point_xz_hole*dz;%数值=点数*步长
 
 
 % %画图
-% figure(1);
-% surf(z*1000,x*1000,zeros_I_pr_hole); %横坐标为z，纵坐标为x，颜色代表p1的大小  
-% shading interp
-% title('Rayleigh(dS1 hole_a=7.5e-4)  ');
-% axis equal;%定义坐标的比例相同
-% colorbar
-% xlabel('z（mm） ');
-% ylabel('x (mm) ');
-% zlabel('normalized pressure');
-% 
-% figure(2);
-% surf(z*1000, x*1000, zeros_I_pr);%对prs归一化   
-% shading interp;
-% colorbar;
-% axis equal;
-% title('Rayleigh');
-% xlabel('z (mm) ');
-% ylabel('x (mm) ');
-% zlabel('normalized pressure');
-
 % 对比两种方法画出来的结果
 figure(3);
 surf(z*1000, x*1000, error_zeros_xz); 
@@ -170,12 +150,8 @@ xlabel('z (mm) ');
 ylabel('x (mm) ');
 title('error between hole and no hole(R=120mm,a=60mm,10%a)');
 
-% figure(4);
-% histogram(dS_ring,10);
-% title('点源面积dS分布');
-% 
-% figure(5);
-% plot(error_dSi);
-% xlabel('ith ring ');
-% ylabel('error ');
-% title('error between the sum of dS and theory calculation');
+figure(4);
+plot(I_pr_hole(121,:));
+hold on;
+plot(I_pr_hole(121,:));
+
