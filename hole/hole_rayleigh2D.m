@@ -2,7 +2,7 @@
 clear all;
 f0=1e6;%定义频率和声功率
 P=100;
-n=4;
+n=1;
 medium = set_medium('lossless');%定义介质（单层：水），可以改成多层set_layered_medium
 lambda = medium.soundspeed/f0;%波长=c/f
 k=2*pi/lambda;%波数
@@ -11,7 +11,7 @@ R = n * 5 * 2 * lambda;%ROC曲率半径
 a = n * 5 * lambda;%注意这里的a是孔径的一半
 fnumber=R/(2*a);%所以f-number=曲率半径/孔径（2*a）
 d = sqrt(R^2 - a^2);%理论焦点到孔径中心的距离
-u=surface_intensity(R,a,hole_a,medium.density,medium.soundspeed);
+u=normal_velocity(P,R,a,hole_a,medium.density,medium.soundspeed);
 
 %划分网格点
 xmin=-a;%观察点坐标的范围
@@ -80,12 +80,6 @@ error_dSi=abs(dSi-dSi_theory)./dSi;%求解析解环带面积和数值解环带面积的误差
 
 %声压转化为声场计算
 I_pr=acousticintensity(pr,medium.density,medium.soundspeed); 
-
-% error=abs(I_pr_nor-I_prs_nor)./I_pr_nor;
-
-%选择感兴趣区域误差
-% [index]=find(I_prs>=0.25);
-% error_zeros_xz(index)=error(index);
 
 %画图
 figure(1);

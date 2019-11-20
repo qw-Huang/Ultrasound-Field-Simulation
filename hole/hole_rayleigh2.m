@@ -8,14 +8,14 @@ lambda = medium.soundspeed/f0;%波长=c/f
 k=2*pi/lambda;%波数
 fnumber=R/(2*a);%所以f-number=曲率半径/孔径（2*a）
 d = sqrt(R^2 - a^2);%理论焦点到孔径中心的距离
-u=surface_intensity(R,a,hole_a,medium.density,medium.soundspeed);
+u=normal_velocity(P,R,a,hole_a,medium.density,medium.soundspeed);
 
 %划分网格点
 xmin=-a;%观察点坐标的范围
 xmax=-xmin;
 ymax=0;
 ymin=0;
-zDiff=0.7*d;
+zDiff=1*d;
 zmin=R-zDiff;
 zmax=R+zDiff;
 
