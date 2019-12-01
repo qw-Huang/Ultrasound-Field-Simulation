@@ -12,7 +12,7 @@ R = 5 * 2 * lambda;%ROC曲率半径
 a = 5 * lambda;%注意这里a是孔径的一半
 fnumber=R/(2*a);%所以f-number=曲率半径/孔径（2*a）
 d = sqrt(R^2 - a^2);%理论焦点到孔径中心的距离
-u=normal_velocity(P,R,a,medium.density,medium.soundspeed);
+u=normal_velocity(P,R,a,0,medium.density,medium.soundspeed);
 
 %划分网格点
 xmin=-a;%观察点坐标的范围
