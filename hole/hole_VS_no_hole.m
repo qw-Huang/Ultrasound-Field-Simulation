@@ -2,12 +2,12 @@
 clear all;
 f0=1e6;%定义频率和声功率
 P=100;
-n=4*1.5;
+n=1;
 medium = set_medium('lossless');%定义介质（单层：水），可以改成多层set_layered_medium
 lambda = medium.soundspeed/f0;%波长=c/f
 k=2*pi/lambda;%波数
-R = 4 * 5 * 2 * lambda;%ROC曲率半径
-a = 4 * 5 * lambda;%注意这里的a是孔径的一半
+R = 1 * 5 * 2 * lambda;%ROC曲率半径
+a = 1 * 5 * lambda;%注意这里的a是孔径的一半
 fnumber=R/(2*a);%所以f-number=曲率半径/孔径（2*a）
 d = sqrt(R^2 - a^2);%理论焦点到孔径中心的距离
 
@@ -41,8 +41,8 @@ u_hole=normal_velocity(P,R,a,hole_a,medium.density,medium.soundspeed);
 
 %换能器离散化为点声源  注意离散化之后点声源的大小
 dr=lambda/6;%球面分割成很多个圆环，对应的半径是r，dr是半径增加的步长
-ndr=round((a-dr-hole_a)/dr);
-dr=(a-dr-hole_a)/ndr;
+ndr=round((a-hole_a)/dr);
+dr=(a-hole_a)/ndr;
 r_back=(0+hole_a):dr:a-dr;%点声源前一段弧长对应的r
 r_after=(dr+hole_a):dr:a;%点声源后一段弧长对应的r
 r=r_after-dr/2;%第i个环带对应的中心点的r
@@ -126,7 +126,7 @@ focus_Ichange=(I_pr_max-I_pr_hole_max)/I_pr_max; %焦点声强变化
 
 %选择感兴趣区域误差
 [index]=find(I_pr>=0.25*I_pr_max);
-error_I=abs(I_pr-I_pr_hole)./I_pr;
+error_I=I_pr_hole./I_pr;
 error_zeros_xz(index)=error_I(index);
 [index_hole]=find(I_pr_hole>=0.25*I_pr_hole_max);
 I_pr_zeros(index)=I_pr(index); %无开孔的-6dB声强分布
@@ -150,8 +150,8 @@ xlabel('z (mm) ');
 ylabel('x (mm) ');
 title('error between hole and no hole(R=120mm,a=60mm,10%a)');
 
-figure(4);
-plot(I_pr_hole(121,:));
-hold on;
-plot(I_pr_hole(121,:));
+% figure(4);
+% plot(I_pr_hole(121,:));
+% hold on;
+% plot(I_pr_hole(121,:));
 
