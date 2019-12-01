@@ -1,25 +1,26 @@
-%测试时间 对三维的代码进行改进，只计算四分之一个象限 （未改）
-clc;
+%测试时间 对三维的代码进行改进，只计算四分之一个象限 
+close all;
 clear all;
 clear all;
+profile on;
 f0=1e6;%定义频率和法向阵速
 P=100;
 medium = set_medium('lossless');%定义介质：单层->水，可改成多层，用函数set_layered_medium
 lambda = medium.soundspeed/f0;%波长=c/f
 k=2*pi/lambda;%波数
 
-R = 5 * 2 * lambda;%ROC曲率半径
-a = 5 * lambda;%注意这里a是孔径的一半
+R =10* 5 * 2 * lambda;%ROC曲率半径
+a =10* 5 * lambda;%注意这里a是孔径的一半
 fnumber=R/(2*a);%所以f-number=曲率半径/孔径（2*a）
 d = sqrt(R^2 - a^2);%理论焦点到孔径中心的距离
-u=normal_velocity(P,R,a,medium.density,medium.soundspeed);
+u=normal_velocity(P,R,a,0,medium.density,medium.soundspeed);
 
 %划分网格点
-xmin=-a;%观察点坐标的范围
-xmax=-xmin;
-ymin=xmin;
-ymax=-ymin;
-zDiff=0.7*d;
+xmin=-0.005;%观察点坐标的范围
+xmax=0;
+ymin=-0.005;
+ymax=0;
+zDiff=0.01;
 zmin=R-zDiff;
 zmax=R+zDiff;
 
@@ -61,38 +62,32 @@ for ix=1:nx  %观察网格点x方向的坐标划分
             dS=repmat(dS_ring,ntheta,1); % repmat( A , m , n )：将向量／矩阵在垂直方向复制m次，在水平方向复制n次。
             A=dS.*exp(-1i.*k.*rn)./rn;
             B=sum(sum(A));%对上述求得的值累加
-            pr(ix,iy,iz)=1i*medium.density*u*medium.soundspeed*k/(2*pi)*B; %乘以相关参数得到声压p   
+            pr_1(ix,iy,iz)=1i*medium.density*u*medium.soundspeed*k/(2*pi)*B; %乘以相关参数得到声压p   
         end
     end
 end
 toc
-pr_max=max(pr(:));
-I_pr=abs(pr).^2/(medium.density*medium.soundspeed);
+pr_3=flipud(pr_1);%对声压矩阵进行反转，相当于关于x=0轴对称
+pr_13=[pr_1;pr_3];%将上述两个矩阵拼接起来，但是中间一行会复制两遍
+[row,column]=size(pr_13);
+row_median=row/2;%取中间行
+pr_13(row_median,:,:)=[]; %删掉中间重复的一行
+pr_24=fliplr(pr_13);%对声压矩阵进行左右反转，相当于关于y=0轴对称
+pr_all=[pr_13,pr_24];%将上述两个矩阵拼接起来，但是中间一行会复制两遍
+[row,column,c]=size(pr_all);
+col_median=column/2;%取中间列
+pr_all(:,col_median,:)=[]; %删掉中间重复的一行
 
-%找到感兴趣的区域声强-6dB范围;找到最大值，返回对应的三维坐标，在最大点对应的xy平面，把感兴趣区域画出来
+%声压转化为声场计算
+I_pr=acousticintensity(pr_all,medium.density,medium.soundspeed); 
+I_pr_nor=I_pr./max(I_pr(:));
 max_index=find_maxpoint(I_pr);%返回最大点位置坐标
-x_index=max_index(1);%最大值位置x下标
-y_index=max_index(2);%最大值位置y下标
-z_index=max_index(3);%最大值位置z下标
-I_pr_max=max(I_pr(:));%自定义rayleigh声强最大值
-I_pr_xz=I_pr(:,y_index,:)./I_pr_max;
-I_pr_xy=I_pr(:,:,z_index)./I_pr_max;
-
-figure(1);
-surf(squeeze(I_pr_xz));%如果是xz平面，(z,x,p)
-axis equal;
+y_index=max_index(2);
+x=-0.005:dx:0.005;
+surf(z*1000,x*1000,squeeze(I_pr(:,y_index,:)));
 shading interp;
-colorbar;
-title('自定义Rayleigh积分xz平面声强分布 ');
-xlabel('z ');
-ylabel('x ');
-
-figure(2);
-surf(squeeze(I_pr_xy));%如果是xz平面，(z,x,p)
 axis equal;
-shading interp;
-colorbar;
-title('自定义Rayleigh积分xy平面声强分布 ');
-xlabel('y ');
-ylabel('x ');
+profile viewer
+
+
 
