@@ -1,6 +1,6 @@
-function [output] = hole_rayleigh2(R,a,P,hole_a)
-%HOLE_RAYLEIGH2 有开孔的换能器声场分布,输出取模之后的声压分布
-%   此处显示详细说明
+function [output] = hole_rayleigh2(R,a,u,hole_a,x,z)
+%HOLE_RAYLEIGH2 有圆形开孔的换能器声场分布,输出取模之后的声压分布
+%   此处显示详
 %使用dS1点声源划分方法，在2d平面xz面，加开孔的换能器声强计算
 f0=1e6;%定义频率和声功率
 medium = set_medium('lossless');%定义介质（单层：水），可以改成多层set_layered_medium
@@ -8,30 +8,15 @@ lambda = medium.soundspeed/f0;%波长=c/f
 k=2*pi/lambda;%波数
 fnumber=R/(2*a);%所以f-number=曲率半径/孔径（2*a）
 d = sqrt(R^2 - a^2);%理论焦点到孔径中心的距离
-u=normal_velocity(P,R,a,hole_a,medium.density,medium.soundspeed);
-
-%划分网格点
-xmin=-a;%观察点坐标的范围
-xmax=-xmin;
-ymax=0;
-ymin=0;
-zDiff=1*d;
-zmin=R-zDiff;
-zmax=R+zDiff;
-
-dx = lambda/6; %网格点的步长
-dz = lambda/6;
-
-x=xmin:dx:xmax;%网格点的分布
-z=zmin:dz:zmax;
-
+% u=normal_velocity(P,R,a,hole_a,medium.density,medium.soundspeed);
+%  u=1;
 nx=length(x);%网格点的点数
 nz=length(z);
 
 %换能器离散化为点声源  注意离散化之后点声源的大小
 dr=lambda/6;%球面分割成很多个圆环，对应的半径是r，dr是半径增加的步长
-ndr=round((a-dr-hole_a)/dr);
-dr=(a-dr-hole_a)/ndr;
+ndr=round((a-hole_a)/dr);
+dr=(a-hole_a)/ndr;
 r_back=(0+hole_a):dr:a-dr;%点声源前一段弧长对应的r
 r_after=(dr+hole_a):dr:a;%点声源后一段弧长对应的r
 r=r_after-dr/2;%第i个环带对应的中心点的r
@@ -67,6 +52,6 @@ toc
 %声压转化为声场计算
 I_pr=acousticintensity(pr,medium.density,medium.soundspeed); 
 
-output = abs(pr);
+output = pr;
 end
 
