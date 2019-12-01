@@ -35,8 +35,8 @@ error_zeros_xz=zeros(nx,nz); %定义全零误差矩阵
 
 %换能器离散化为点声源  注意离散化之后点声源的大小
 dr=lambda/6;%球面分割成很多个圆环，对应的半径是r，dr是半径增加的步长
-ndr=round((a-dr-hole_a)/dr);
-dr=(a-dr-hole_a)/ndr;
+ndr=round((a-hole_a)/dr);
+dr=(a-hole_a)/ndr;
 r_back=(0+hole_a):dr:a-dr;%点声源前一段弧长对应的r
 r_after=(dr+hole_a):dr:a;%点声源后一段弧长对应的r
 r=r_after-dr/2;%第i个环带对应的中心点的r
