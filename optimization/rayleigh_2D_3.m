@@ -1,5 +1,5 @@
-%测试计算时间
-clc;
+%测试计算时间 对代码进行改进，将两个 for循环改为1个for循环
+
 clear all;
 profile on;
 
@@ -16,7 +16,7 @@ d = sqrt(R^2 - a^2);%理论焦点到孔径中心的距离
 %划分网格点
 xmin=-a;%观察点坐标的范围
 xmax=0;
-ymax=0;
+ymax=-a;
 ymin=0;
 zDiff=0.7*d;
 zmin=R-zDiff;
@@ -65,7 +65,7 @@ x_repeat=repmat(x_colnum,1,ntheta*nr);%将列向量扩展和X Y Z相同的矩阵
 %rayleigh积分计算xz平面的声场  
 tic
 
-    parfor iz=1:nz  %观察网格点z方向的坐标
+    for iz=1:nz  %观察网格点z方向的坐标
         rn=sqrt((X-x_repeat).^2+(Y-y).^2+(Z-z(iz)).^2);%观察点到点源的距离
         dS_ring=r.*dtheta.*R.*(asin(r_after./R)-asin(r_back./R));%每一环带离散的dS的大小，第i环离散的点声源面积dS=第i环的离散弧长*dr对应的短弧
         dS_source=repmat(dS_ring,ntheta,1); % repmat( A , m , n )：将向量／矩阵在垂直方向复制m次，在水平方向复制n次。
@@ -89,5 +89,4 @@ pr(index_median,:)=[]; %删掉中间重复的一行
 I_pr=acousticintensity(pr,medium.density,medium.soundspeed); 
 I_pr_nor=I_pr./max(I_pr(:));
 max_index=find_maxpoint(I_pr);%返回最大点位置坐标
-
 profile viewer
