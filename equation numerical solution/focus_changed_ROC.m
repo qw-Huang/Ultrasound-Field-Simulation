@@ -8,7 +8,8 @@ n=0:0.002:0.5;
 f0=1e6;%定义频率和声功率
 medium = set_medium('lossless');%定义介质（单层：水）
 lambda = medium.soundspeed/f0;%波长=c/f
-u=1;
+P=100;
+
 k=2*pi/lambda;%波数
 % focus0=[4e-3 14.9e-3 14.9e-3];
 syms w;
@@ -17,6 +18,7 @@ A=15e-3;
 %根据文献中公式，焦点前移距离随开孔比例的变化
 for i=1:length(n)
     hole_a=n(i)*a;
+    u=normal_velocity(P,A,a,hole_a,medium.density,medium.soundspeed);
     y2=asin(a/A);
     y1=asin(hole_a/A);
     U2=sqrt(w.^2+2*A.*(A-w).*(1-cos(y2)));
@@ -35,6 +37,7 @@ a=37.5e-3;
 %根据文献中公式，焦点前移距离随开孔比例的变化
 for i=1:length(n)
     hole_a=n(i)*a;
+        u=normal_velocity(P,A,a,hole_a,medium.density,medium.soundspeed);
     y2=asin(a/A);
     y1=asin(hole_a/A);
     U2=sqrt(w.^2+2*A.*(A-w).*(1-cos(y2)));
@@ -53,6 +56,7 @@ a=75e-3;
 %根据文献中公式，焦点前移距离随开孔比例的变化
 for i=1:length(n)
     hole_a=n(i)*a;
+        u=normal_velocity(P,A,a,hole_a,medium.density,medium.soundspeed);
     y2=asin(a/A);
     y1=asin(hole_a/A);
     U2=sqrt(w.^2+2*A.*(A-w).*(1-cos(y2)));

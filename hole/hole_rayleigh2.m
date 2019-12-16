@@ -36,7 +36,7 @@ Z=repmat(Z0,ntheta,1); % repmat( A , m , n )£º½«ÏòÁ¿£¯¾ØÕóÔÚ´¹Ö±·½Ïò¸´ÖÆm´Î£¬ÔÚË
 y=0;
 
 %rayleigh»ı·Ö¼ÆËãxzÆ½ÃæµÄÉù³¡  
-tic
+
 for ix=1:nx  %¹Û²ìÍø¸ñµãx·½ÏòµÄ×ø±ê
     for iz=1:nz  %¹Û²ìÍø¸ñµãz·½ÏòµÄ×ø±ê
         rn=sqrt((X-x(ix)).^2+(Y-y).^2+(Z-z(iz)).^2);%¹Û²ìµãµ½µãÔ´µÄ¾àÀë
@@ -47,7 +47,6 @@ for ix=1:nx  %¹Û²ìÍø¸ñµãx·½ÏòµÄ×ø±ê
         pr(ix,iz)=1i*medium.density*u*medium.soundspeed*k/(2*pi)*B; %³ËÒÔÏà¹Ø²ÎÊıµÃµ½ÉùÑ¹p
     end
 end
-toc
 
 %ÉùÑ¹×ª»¯ÎªÉù³¡¼ÆËã
 I_pr=acousticintensity(pr,medium.density,medium.soundspeed); 

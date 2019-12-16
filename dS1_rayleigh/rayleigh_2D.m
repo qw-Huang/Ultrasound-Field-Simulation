@@ -1,25 +1,33 @@
 %使用dS1点声源划分方法，在2d平面xz面，归一化对比自定义rayleigh积分和focus自带
 %的rayleigh积分，对比声强分布的误差
-clc;
+% clc;
 clear all;
-f0=1e6;u=1;%定义频率和法向阵速
-medium = set_medium('lossless');%定义介质（单层：水），可以改成多层set_layered_medium
+f0=1e6;%定义频率和法向阵速
+% P=100;
+medium = set_medium('muscle');%定义介质（单层：水），可以改成多层set_layered_medium
 lambda = medium.soundspeed/f0;%波长=c/f
+dBperNeper = 20 * log10(exp(1));
+attenuationNeperspermeter=medium.attenuationdBcmMHz/dBperNeper*100*f0/1e6;
 k=2*pi/lambda;%波数
 
-R = 1 * 5 * 2 * lambda;%ROC曲率半径
-a = 1 * 5 * lambda;%注意这里的a是孔径的一半
+% k=2*pi/lambda-j*medium.attenuationdBcmMHz;%波数
+
+R = 75e-3;%ROC曲率半径
+a=30e-3;
 fnumber=R/(2*a);%所以f-number=曲率半径/孔径（2*a）
 d = sqrt(R^2 - a^2);%理论焦点到孔径中心的距离
+% u=normal_velocity(P,R,a,0,medium.density,medium.soundspeed);
+u=1;
 
 %划分网格点
-xmin=-a;%观察点坐标的范围
+xmin=-1.5*a;%观察点坐标的范围
 xmax=-xmin;
 ymax=0;
 ymin=0;
-zDiff=0.7*d;
-zmin=R-zDiff;
-zmax=R+zDiff;
+
+zmin=65e-3;
+% zmin=R-zDiff;
+zmax=80e-3;
 
 dx = lambda/6; %网格点的步长
 dz = lambda/6;
@@ -38,7 +46,7 @@ r_back=0:dr:a-dr;%点声源前一段弧长对应的r
 r_after=dr:dr:a;%点声源后一段弧长对应的r
 r=r_after-dr/2;%第i个环带对应的中心点的r
 Sm=lambda/6;%中间环带离散化后对应的dS的弧长等于lambda/6
-median=length(r)/2+1;%取中间环带的索引
+median=round(length(r)/2);%取中间环带的索引
 ntheta=round(2*pi*r(median)/Sm);%中间层一个环带的划分点数,取整
 dtheta=2*pi./ntheta;%根据取整重新调整每个点声源的对应弧度
 theta_after=dtheta:dtheta:2*pi;%每个环带离散成多个点对应的弧度数组
@@ -59,8 +67,8 @@ for ix=1:nx  %观察网格点x方向的坐标
         rn=sqrt((X-x(ix)).^2+(Y-y).^2+(Z-z(iz)).^2);%观察点到点源的距离
         dS_ring=r.*dtheta.*R.*(asin(r_after./R)-asin(r_back./R));%每一环带离散的dS的大小，第i环离散的点声源面积dS=第i环的离散弧长*dr对应的短弧
         dS=repmat(dS_ring,ntheta,1); % repmat( A , m , n )：将向量／矩阵在垂直方向复制m次，在水平方向复制n次。
-        A=dS.*exp(-1i.*k.*rn)./rn;
-        B=sum(sum(A));%对上述求得的值累加
+        A=dS.*exp(-1i.*k.*rn)./rn.*exp(-attenuationNeperspermeter.*rn);
+        B=sum(sum(A));%对上述求得的值累加 
         pr(ix,iz)=1i*medium.density*u*medium.soundspeed*k/(2*pi)*B; %乘以相关参数得到声压p
     end
 end
@@ -86,7 +94,9 @@ ndiv = 100;%积分的点数
 dflag = 0;%如果=1，结果有什么不同？
 
 tic
-prs=rayleigh_cw(xdcr,ps,medium,ndiv,f0);%FOCUS自带的rayleigh计算
+% prs=rayleigh_cw(xdcr,ps,medium,ndiv,f0);%FOCUS自带的rayleigh计算
+prs=cw_pressure(xdcr,ps,medium,ndiv,f0);%FOCUS自带的fnm计算
+
 toc
 
 %声压转化为声场计算
@@ -100,43 +110,8 @@ error=abs(I_pr_nor-I_prs_nor)./I_pr_nor;
 [index]=find(I_prs_nor>=0.25);
 error_zeros_xz(index)=error(index);
 
-%画图
-figure(1);
-surf(z*1000,x*1000,I_pr_nor); %横坐标为z，纵坐标为x，颜色代表p1的大小  
-shading interp
-title('Rayleigh(dS1)  ');
-axis equal;%定义坐标的比例相同
-colorbar
-xlabel('z（mm） ');
-ylabel('x (mm) ');
-zlabel('normalized pressure');
-
-figure(2);
-surf(z*1000, x*1000, I_prs_nor);%对prs归一化   
+figure(3)
+surf(z*1000,x*1000,abs(pr));
 shading interp;
 colorbar;
 axis equal;
-title('Rayleigh(FOCUS)');
-xlabel('z (mm) ');
-ylabel('x (mm) ');
-zlabel('normalized pressure');
-
-%对比两种方法画出来的结果
-figure(3);
-surf(z*1000, x*1000, error_zeros_xz); 
-shading interp %去掉网格，平滑曲面
-axis equal;
-colorbar  %加颜色条
-xlabel('z (mm) ');
-ylabel('x (mm) ');
-title('error between Rayleigh and Rayleigh (FOCUS)');
-
-figure(4);
-histogram(dS_ring,10);
-title('点源面积dS分布');
-
-figure(5);
-plot(error_dSi);
-xlabel('ith ring ');
-ylabel('error ');
-title('error between the sum of dS and theory calculation');

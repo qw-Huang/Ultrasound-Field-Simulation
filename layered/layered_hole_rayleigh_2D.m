@@ -4,8 +4,9 @@ function [output] = layered_hole_rayleigh_2D(R,a,hole_a,P,medium,x,z)
 j=sqrt(-1);
 f0=1e6;
 lambda1 = medium(1).soundspeed/f0;%波长=c/f
+lambda2 = medium(2).soundspeed/f0;%波长=c/f
 k1=2*pi/lambda1-j*medium(1).attenuationdBcmMHz;%波数
-k2=2*pi/lambda1-j*medium(2).attenuationdBcmMHz;%波数
+k2=2*pi/lambda2-j*medium(2).attenuationdBcmMHz;%波数
 
 fnumber=R/(2*a);%所以f-number=曲率半径/孔径（2*a）
 d = sqrt(R^2 - a^2);%理论焦点到孔径中心的距离
@@ -70,7 +71,7 @@ for ix=1:nx  %观察网格点x方向的坐标
         dS_m2=dx1*dy1; % repmat( A , m , n )：将向量／矩阵在垂直方向复制m次，在水平方向复制n次。
         Am2=u_m2.*exp(-j.*k2.*rm2)./rm2*dS_m2;
         Bm2=sum(sum(Am2));%对上述求得的值累加 
-        pr(ix,iz)=j*k1*medium(2).soundspeed*medium(2).density/(2*pi)*Bm2; %乘以相关参数得到声压p
+        pr(ix,iz)=j*k2*medium(2).soundspeed*medium(2).density/(2*pi)*Bm2; %乘以相关参数得到声压p
     end
 end
 
