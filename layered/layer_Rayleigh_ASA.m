@@ -48,7 +48,7 @@ cg_3d = set_coordinate_grid([dx dy dz],xmin,xmax,ymin,ymax,zmin,zmax);
 
 tic
 pr=rayleigh_2D_xy(R,a,f0,u,medium1,x,y,z0);
-[p_asa1,p_interface]=layer_cw_angular_spectrum(pr,cg_3d1,medium1,f0,1024,'Pa');
+[p_asa1,p_interface]=layer_cw_angular_spectrum(pr,cg_3d1,medium1,medium2,f0,1024,'Pa');
 p_asa=cw_angular_spectrum(p_interface,cg_3d,medium2,f0,1024,'Pa');
 toc
 
