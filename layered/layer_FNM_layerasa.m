@@ -10,7 +10,7 @@ fnumber=R/(2*a);
 d = sqrt(R^2 - a^2);
 
 % Use a layered medium
-medium = set_layered_medium([0,30e-3],[set_medium('water'),set_medium('skin')]);
+medium = set_layered_medium([0,30e-3],[set_medium('water'),set_medium('water')]);
 
 
 % Center frequency and wavelength
@@ -23,8 +23,9 @@ xmin=-1.5*a;
 xmax=1.5*a;
 ymin=-1.5*a;
 ymax=1.5*a;
-zmin=20e-3;
-zmax=80e-3;
+zmin=7.5e-3;
+% zmin=29.75e-3;
+zmax=90e-3;
 dx=lambda/6;
 dy=lambda/6;
 dz=lambda/6;
@@ -39,17 +40,18 @@ nz=length(z);
 xdcr_array = get_spherical_shell(a,R);% ÇòÐÎ»»ÄÜÆ÷
 
 % Determine where the source pressure will be calculated
-z0 = 30e-3;
+z0 = 7.75e-3;
 y_median = floor((ymax-ymin)/2/dy)+1;
 x_median=floor(length(x)/2)+1;
 
 % pressure (x-z plane)
 cg_p0 = set_coordinate_grid([dx dy 1], xmin,xmax,ymin,ymax,z0,z0);
+
 % cg_3d = set_coordinate_grid([dx dy dz],xmin,xmax,ymin,ymax,zmin,zmax);
 % Calculate the pressure
 ndiv = 200;
 tic();
-p0 = fnm_call(xdcr_array,cg_p0,medium,ndiv,f0,0);%'fnm sse'
+p0 = fnm_call(xdcr_array,cg_p0,medium,ndiv,f0);%'fnm sse'
 
 tic();
 p_asa = layerasa(p0,z,medium,1024,dz,f0);
@@ -70,7 +72,9 @@ radial_dB=x(max(radial_dB_index))-x(min(radial_dB_index));
 figure(2);
 p=abs(squeeze(p_asa(:,y_index,:)));
 surf(z*1000, x*1000, p);
+shading interp;
 xlabel('z (mm)');
 ylabel('x (mm)');
+axis equal;
 shading flat;
-title('normalized ASA Pressure (y=0)');
+title('FNM + layerasa ');
