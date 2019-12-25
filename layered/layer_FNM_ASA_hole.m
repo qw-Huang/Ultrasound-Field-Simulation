@@ -76,18 +76,18 @@ xdcr_array = get_spherical_shell(a,R);% 球形换能器
 % 
 % end
 % toc
-% figure(1);
-% scatter(n,focus_forward,25,'.','k');
-% hold on;
-% figure(2);
-% scatter(n,p_asa_max,25,'.','k');
-% hold on;
-% figure(3);
-% scatter(n,axial_dB,25,'.','k');
-% hold on;
-% figure(4);
-% scatter(n,radial_dB,25,'.','k');
-% hold on;
+figure(1);
+scatter(n,focus_forward,25,'.','k');
+hold on;
+figure(2);
+scatter(n,p_asa_max,25,'.','k');
+hold on;
+figure(3);
+scatter(n,axial_dB,25,'.','k');
+hold on;
+figure(4);
+scatter(n,radial_dB,25,'.','k');
+hold on;
 
 %介质全是水
 for i=1:length(n)
