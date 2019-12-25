@@ -4,7 +4,6 @@ function [output] = rayleigh_2D_xy(R,a,f0,u,medium,x,y,zmin)
 nx=length(x);
 ny=length(y);
 
-
 lambda = medium.soundspeed/f0;%²¨³¤=c/f 1.5mm   lambda/6=0.25mm
 k=2*pi/lambda;%²¨Êý
 
