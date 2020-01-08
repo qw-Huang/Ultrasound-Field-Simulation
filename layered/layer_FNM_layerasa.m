@@ -8,15 +8,14 @@ R = 75e-3;
 a = 30e-3;
 fnumber=R/(2*a);
 d = sqrt(R^2 - a^2);
+P=100;
 
 % Use a layered medium
-medium = set_layered_medium([0,30e-3],[set_medium('water'),set_medium('water')]);
-
-
+medium = set_layered_medium([0,20e-3],[set_medium('water'),set_medium('muscle')]);
 % Center frequency and wavelength
-f0=1e6;
+f0=1.5e6;
 lambda = medium(1).soundspeed/f0;
-
+u=normal_velocity(P,R,a,0,medium(1).density,medium(1).soundspeed);
 
 %划分网格点
 xmin=-1.5*a;
@@ -26,9 +25,9 @@ ymax=1.5*a;
 zmin=7.5e-3;
 % zmin=29.75e-3;
 zmax=90e-3;
-dx=lambda/6;
-dy=lambda/6;
-dz=lambda/6;
+dx=2.5e-4;
+dy=2.5e-4;
+dz=2.5e-4;
 x=xmin:dx:xmax;
 y=ymin:dy:ymax;
 z=zmin:dz:zmax;
@@ -52,7 +51,7 @@ cg_p0 = set_coordinate_grid([dx dy 1], xmin,xmax,ymin,ymax,z0,z0);
 ndiv = 200;
 tic();
 p0 = fnm_call(xdcr_array,cg_p0,medium,ndiv,f0);%'fnm sse'
-
+p0=p0*u;
 tic();
 p_asa = layerasa(p0,z,medium,1024,dz,f0);
 % p_asa=layerasa(p0,z,medium,f0,1024,'Pa');

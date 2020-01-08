@@ -58,7 +58,8 @@ ny=nn(2);
 nz = length(z);
 % Convert attenuation to Np/m
 dBperNeper = 20 * log10(exp(1));
-attenuationNeperspermeter=medium.attenuationdBcmMHz/dBperNeper*100*f0/1e6;
+
+attenuationNeperspermeter=medium.attenuationdBcmMHz/dBperNeper*100*(f0/1e6)^1.1;
 
 pressurez0 = fft2(p0,nffts,nffts);
 
