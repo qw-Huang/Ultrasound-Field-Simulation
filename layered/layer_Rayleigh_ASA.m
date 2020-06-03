@@ -4,17 +4,17 @@ clc;
 clear all;
 
 % Set up the array
-R=75e-3;
-a=30e-3;
+R=150e-3;
+a=60e-3;
 
 % Use a layered medium
 medium1 = set_medium('water');
 medium2 = set_medium('water');
-% P=100;
-% u=normal_velocity(P,R,a,0,medium1.density,medium1.soundspeed);
-u=1;
+P=100;
+u=normal_velocity(P,R,a,0,medium1.density,medium1.soundspeed);
+% u=1;
 % Center frequency and wavelength
-f0 = 1e6;
+f0 = 0.8e6;
 lambda = medium1.soundspeed/f0;
 d = sqrt(R^2 - a^2);%理论焦点到孔径中心的距离
 
@@ -24,7 +24,7 @@ xmax = -xmin;
 ymin = -1.5*a;
 ymax = -ymin;
 zmin = 30e-3;
-zmax = 90e-3;
+zmax = 150e-3;
 
 dx = lambda/6;
 dy = lambda/6;

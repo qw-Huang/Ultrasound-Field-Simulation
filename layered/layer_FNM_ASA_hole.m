@@ -1,11 +1,11 @@
-%rayleigh积分+ASA  加开孔 pr_res=pr_all-pr_hole 
+%FNM+ASA  加开孔 pr_res=pr_all-pr_hole 
 clc;
 clear all;
 close all;
 
 % Set up the array
-R=75e-3;
-a=30e-3;
+R=150e-3;
+a=90e-3;
 n=0.05:0.05:0.5;
 % Use a layered medium
 medium1 = set_medium('water');
@@ -23,7 +23,7 @@ xmax = -xmin;
 ymin = -1.5*a;
 ymax = -ymin;
 zmin = 30e-3;
-zmax = 90e-3;
+zmax = 170e-3;
 
 dx = lambda/6;
 dy = lambda/6;
@@ -34,12 +34,12 @@ y = ymin:dy:ymax;
 z = zmin:dz:zmax;
 
 % Determine where the source pressure will be calculated
-z0=7.75e-3;
+z0=R-d+lambda;
 y_median = floor((ymax-ymin)/2/dy)+1;
 x_median=floor(length(x)/2)+1;
 
 zmin1=z0;
-zmax1=30e-3;
+% zmax1=30e-3;!!!!!
 z1=zmin1:dz:zmax1;
 
 cg_p0 = set_coordinate_grid([dx dy 1], xmin,xmax,ymin,ymax,z0,z0);
@@ -49,38 +49,37 @@ cg_3d = set_coordinate_grid([dx dy dz],xmin,xmax,ymin,ymax,zmin,zmax);
 ndiv = 200;
 xdcr_array = get_spherical_shell(a,R);% 球形换能器
 
-% for i=1:length(n)
-%     hole_a(i)=n(i)*a;
-%     u(i)=normal_velocity(P,R,a,hole_a(i),medium1.density,medium1.soundspeed);
-%     tic();
-%     xdcr_array_hole = get_spherical_shell(hole_a(i),R);% 球形换能器
-%     p0_all = fnm_call(xdcr_array,cg_p0,medium1,ndiv,f0,0);
-%     p0_hole = fnm_call(xdcr_array_hole,cg_p0,medium1,ndiv,f0,0);
-%     p0_res=p0_all-p0_hole;
-%     p0=p0_res.*u(i);%把法向阵速u=1转换为P=100
-%     [p_asa1,p_interface]=layer_cw_angular_spectrum(p0,cg_3d1,medium1,medium2,f0,1024,'Pa');
-%     p_asa=cw_angular_spectrum(p_interface,cg_3d,medium2,f0,1024,'Pa');
-%    
-%     p_asa_abs=abs(p_asa);
-%     p_asa_max(i)=max(p_asa_abs(:));
-%     focus_index_1(i)=find(p_asa_abs==p_asa_max(i));
-%     s=size(p_asa_abs);
-%     [x_index,y_index,z_index]=ind2sub(s,focus_index_1(i));%将最大值单下标转为三维多下标
-%     focus_index(i)=z_index;
-%     focus_forward(i)=R-z(focus_index(i));
-%     %轴向-6dB
-%     axial_dB_index=find(p_asa_abs(x_median,y_median,:)>=0.5*p_asa_max(i));
-%     axial_dB(i)=z(max(axial_dB_index))-z(min(axial_dB_index));
-%     radial_dB_index=find(p_asa_abs(:,y_median,z_index)>=0.5*p_asa_max(i));
-%     radial_dB(i)=x(max(radial_dB_index))-x(min(radial_dB_index));
-% 
-% end
-% toc
+for i=1:length(n)
+    hole_a(i)=n(i)*a;
+    u(i)=normal_velocity(P,R,a,hole_a(i),medium1.density,medium1.soundspeed);
+    tic();
+    xdcr_array_hole = get_spherical_shell(hole_a(i),R);% 球形换能器
+    p0_all = fnm_call(xdcr_array,cg_p0,medium1,ndiv,f0,0);
+    p0_hole = fnm_call(xdcr_array_hole,cg_p0,medium1,ndiv,f0,0);
+    p0_res=p0_all-p0_hole;
+    p0=p0_res.*u(i);%把法向阵速u=1转换为P=100
+    [p_asa1,p_interface]=layer_cw_angular_spectrum(p0,cg_3d1,medium1,medium2,f0,1024,'Pa');
+    p_asa=cw_angular_spectrum(p_interface,cg_3d,medium2,f0,1024,'Pa');
+   
+    p_asa_abs=abs(p_asa);
+    p_asa_max(i)=max(p_asa_abs(:));
+    focus_index_1(i)=find(p_asa_abs==p_asa_max(i));
+    s=size(p_asa_abs);
+    [x_index,y_index,z_index]=ind2sub(s,focus_index_1(i));%将最大值单下标转为三维多下标
+    focus_index(i)=z_index;
+    focus_forward(i)=R-z(focus_index(i));
+    %轴向-6dB
+    axial_dB_index=find(p_asa_abs(x_median,y_median,:)>=0.5*p_asa_max(i));
+    axial_dB(i)=z(max(axial_dB_index))-z(min(axial_dB_index));
+    radial_dB_index=find(p_asa_abs(:,y_median,z_index)>=0.5*p_asa_max(i));
+    radial_dB(i)=x(max(radial_dB_index))-x(min(radial_dB_index));
+end
+toc
 figure(1);
-scatter(n,focus_forward,25,'.','k');
+plot(n,focus_forward*1000,25,'.','k');
 hold on;
 figure(2);
-scatter(n,p_asa_max,25,'.','k');
+scatter(n,p_asa_max/10^6,25,'.','k');
 hold on;
 figure(3);
 scatter(n,axial_dB,25,'.','k');
@@ -116,7 +115,7 @@ for i=1:length(n)
     radial_dB_w(i)=x(max(radial_dB_index_w))-x(min(radial_dB_index_w));
 
 end
-
+toc
 figure(1);
 scatter(n,focus_forward_w,25,'.','b');
 xlabel('hole/a');

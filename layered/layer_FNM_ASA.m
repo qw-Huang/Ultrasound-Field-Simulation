@@ -18,7 +18,8 @@ medium2 = set_medium('muscle');
 f0=1.2e6;
 lambda = medium1.soundspeed/f0;
 u=normal_velocity(P,R,a,0,medium1.density,medium1.soundspeed);
-z_interface=40e-3;
+depth=0.06;
+z_interface=R-depth;
 
 %划分网格点
 dx=lambda/6;

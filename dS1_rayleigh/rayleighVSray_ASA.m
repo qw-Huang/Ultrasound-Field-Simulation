@@ -12,7 +12,7 @@ a = 5 * lambda;%注意这里a是孔径的一半
 fnumber=R/(2*a);%所以f-number=曲率半径/孔径（2*a）
 d = sqrt(R^2 - a^2);%理论焦点到孔径中心的距离
 %划分网格点
-xmin=-0.7*a;%观察点坐标的范围
+xmin=-1*a;%观察点坐标的范围
 xmax=-xmin;
 ymax=xmax;
 ymin=-ymax;
@@ -94,7 +94,7 @@ ylabel('x (mm) ');
 title('rayleigh VS rayleigh+ASA 焦点处xy平面误差情况');
 
 figure(2);
-error_xz=squeeze(error_zeros(:,y_index,:));
+error_xz=squeeze(error_I(:,y_index,:));
 surf(error_xz);
 axis equal;
 shading interp;

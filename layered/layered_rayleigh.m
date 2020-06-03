@@ -1,30 +1,30 @@
 %¸Ä½øµÄrayleigh»ı·Ö£¬¼ÆËãÔÚÁ½²ã½éÖÊÖĞµÄ·Ö²¼ Ë®30mm+¼¡Èâ30mm-90mm
+
+
 % clc;
 clear all;
 j=1i;
-f0=1.1e6;
+f0=0.8e6;
 P=100;%¶¨ÒåÆµÂÊºÍ·¨ÏòÕóËÙ
 medium = set_layered_medium([0,30e-3],[set_medium('muscle'),set_medium('muscle')]);
 lambda1 = medium(1).soundspeed/f0;%²¨³¤=c/f
 lambda2 = medium(2).soundspeed/f0;%²¨³¤=c/f
 
 dBperNeper = 20 * log10(exp(1));
-%  dBperNeper = 8.6886;
-attenuationNeperspermeter1=medium(1).attenuationdBcmMHz/dBperNeper*100*(f0/1e6)^1.1;
+attenuationNeperspermeter1=medium(1).attenuationdBcmMHz/dBperNeper*100*f0/1e6;
 k11=2*pi/lambda1-j*attenuationNeperspermeter1;%²¨Êı
-k1=2*pi/lambda1;
-attenuationNeperspermeter2=medium(2).attenuationdBcmMHz/dBperNeper*100*(f0/1e6)^1.1;
+attenuationNeperspermeter2=medium(2).attenuationdBcmMHz/dBperNeper*100*f0/1e6*(f0/1e6)^1.1;
 k22=2*pi/lambda2-j*attenuationNeperspermeter2;%²¨Êı
 k2=2*pi/lambda2;
 
-R = 100e-3;%ROCÇúÂÊ°ë¾¶
-a = 40e-3;%×¢ÒâÕâÀïµÄaÊÇ¿×¾¶µÄÒ»°ë
+R = 150e-3;%ROCÇúÂÊ°ë¾¶
+a = 60e-3;%×¢ÒâÕâÀïµÄaÊÇ¿×¾¶µÄÒ»°ë
 fnumber=R/(2*a);%ËùÒÔf-number=ÇúÂÊ°ë¾¶/¿×¾¶£¨2*a£©
 d = sqrt(R^2 - a^2);%ÀíÂÛ½¹µãµ½¿×¾¶ÖĞĞÄµÄ¾àÀë
 u=normal_velocity(P,R,a,0,medium(1).density,medium(1).soundspeed);
 %»®·ÖÍø¸ñµã
-% dx = lambda1/6; %Íø¸ñµãµÄ²½³¤
-dx= lambda1/6;
+dx = lambda1/6; %Íø¸ñµãµÄ²½³¤
+
 dy = lambda1/6;
 dz = lambda1/6;
 
@@ -35,8 +35,8 @@ ymin=-ymax;
 
 zmin1=7.75e-3;
 zmax1=30e-3;
-zmin2=87e-3+dz;
-zmax2=103e-3;
+zmin2=140e-3+dz;
+zmax2=150e-3;
 
 x=xmin:dx:xmax;%Íø¸ñµãµÄ·Ö²¼
 y=ymin:dy:ymax;
@@ -54,9 +54,9 @@ r_back=0:dr:a-dr;%µãÉùÔ´Ç°Ò»¶Î»¡³¤¶ÔÓ¦µÄr
 r_after=dr:dr:a;%µãÉùÔ´ºóÒ»¶Î»¡³¤¶ÔÓ¦µÄr
 r=r_after-dr/2;%µÚi¸ö»·´ø¶ÔÓ¦µÄÖĞĞÄµãµÄr
 Sm=lambda1/6;%ÖĞ¼ä»·´øÀëÉ¢»¯ºó¶ÔÓ¦µÄdSµÄ»¡³¤µÈÓÚlambda/6
-median=round(length(r)/2);%È¡ÖĞ¼ä»·´øµÄË÷Òı
+median=length(r)/2+1;%È¡ÖĞ¼ä»·´øµÄË÷Òı
 ntheta=round(2*pi*r(median)/Sm);%ÖĞ¼ä²ãÒ»¸ö»·´øµÄ»®·ÖµãÊı,È¡Õû
-dtheta=2*pi/ntheta;%¸ù¾İÈ¡ÕûÖØĞÂµ÷ÕûÃ¿¸öµãÉùÔ´µÄ¶ÔÓ¦»¡¶È
+dtheta=2*pi./ntheta;%¸ù¾İÈ¡ÕûÖØĞÂµ÷ÕûÃ¿¸öµãÉùÔ´µÄ¶ÔÓ¦»¡¶È
 theta_after=dtheta:dtheta:2*pi;%Ã¿¸ö»·´øÀëÉ¢³É¶à¸öµã¶ÔÓ¦µÄ»¡¶ÈÊı×é
 theta_back=0:dtheta:(2*pi-dtheta);%Ã¿¸ö»·´øÀëÉ¢³É¶à¸öµã¶ÔÓ¦µÄ»¡¶ÈÊı×é
 theta=theta_after-dtheta/2;%µÚi¸ö»·´øÀëÉ¢³ÉµãÉùÔ´£¬dSÖĞ¼äµÄµã¶ÔÓ¦µÄ»¡¶ÈÊı×é
@@ -77,7 +77,7 @@ Z=repmat(Z0,ntheta,1); % repmat( A , m , n )£º½«ÏòÁ¿£¯¾ØÕóÔÚ´¹Ö±·½Ïò¸´ÖÆm´Î£¬ÔÚË
 %         pr1(ix,iz)=1i*medium(1).density*u*medium(1).soundspeed*k1/(2*pi)*B; %³ËÒÔÏà¹Ø²ÎÊıµÃµ½ÉùÑ¹p
 %     end
 % end
-
+% toc
 % interface
 z_interface1=30e-3;
 
@@ -88,10 +88,10 @@ for ix=1:nx  %¹Û²ìÍø¸ñµãx·½ÏòµÄ×ø±ê
         rm1=sqrt((X-x(ix)).^2+(Y-y(iy)).^2+(Z-z_interface1).^2);%interface1µ½µãÔ´µÄ¾àÀë
         theta_m1=acos((z_interface1-Z)./rm1);
         theta_m2=asin(medium(2).soundspeed/medium(1).soundspeed.*sin(theta_m1));
-        Tm1=2*medium(1).soundspeed*medium(1).density.*cos(theta_m1)./(medium(2).soundspeed*medium(2).density.*cos(theta_m1)+medium(1).soundspeed*medium(1).density.*cos(theta_m2));
+        Tm1=2*medium(1).soundspeed*medium(1).density.*cos(theta_m2)./(medium(2).soundspeed*medium(2).density.*cos(theta_m1)+medium(1).soundspeed*medium(1).density.*cos(theta_m2));
         dS_ring=r.*dtheta.*R.*(asin(r_after./R)-asin(r_back./R));%Ã¿Ò»»·´øÀëÉ¢µÄdSµÄ´óĞ¡£¬µÚi»·ÀëÉ¢µÄµãÉùÔ´Ãæ»ıdS=µÚi»·µÄÀëÉ¢»¡³¤*dr¶ÔÓ¦µÄ¶Ì»¡
         dS_m1=repmat(dS_ring,ntheta,1); % repmat( A , m , n )£º½«ÏòÁ¿£¯¾ØÕóÔÚ´¹Ö±·½Ïò¸´ÖÆm´Î£¬ÔÚË®Æ½·½Ïò¸´ÖÆn´Î¡£
-        A=exp(-j.*k11.*rm1)./rm1.*(1-j./(k11.*rm1)).*abs(Tm1).*(cos(theta_m2)).*dS_m1;
+        A=exp(-j.*k11.*rm1)./rm1.*(1-j./(k11.*rm1)).*abs(Tm1).*(cos(theta_m1)).*dS_m1;
         B=sum(sum(A));%¶ÔÉÏÊöÇóµÃµÄÖµÀÛ¼Ó 
         u_m2(ix,iy)=j*u*k11/(2*pi)*B; 
     end
@@ -142,5 +142,5 @@ radial_dB=x(max(radial_dB_index))-x(min(radial_dB_index));
 % axis equal;
 % shading flat;
 % title('Rayleigh ');
-
+% 
 

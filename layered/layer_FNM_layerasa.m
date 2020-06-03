@@ -11,9 +11,9 @@ d = sqrt(R^2 - a^2);
 P=100;
 
 % Use a layered medium
-medium = set_layered_medium([0,20e-3],[set_medium('water'),set_medium('muscle')]);
+medium = set_layered_medium([0,30e-3],[set_medium('water'),set_medium('muscle')]);
 % Center frequency and wavelength
-f0=1.5e6;
+f0=1e6;
 lambda = medium(1).soundspeed/f0;
 u=normal_velocity(P,R,a,0,medium(1).density,medium(1).soundspeed);
 
@@ -22,12 +22,13 @@ xmin=-1.5*a;
 xmax=1.5*a;
 ymin=-1.5*a;
 ymax=1.5*a;
-zmin=7.5e-3;
+
 % zmin=29.75e-3;
 zmax=90e-3;
 dx=2.5e-4;
 dy=2.5e-4;
 dz=2.5e-4;
+zmin=R-d+lambda-dz;
 x=xmin:dx:xmax;
 y=ymin:dy:ymax;
 z=zmin:dz:zmax;
@@ -39,7 +40,7 @@ nz=length(z);
 xdcr_array = get_spherical_shell(a,R);% ÇòÐÎ»»ÄÜÆ÷
 
 % Determine where the source pressure will be calculated
-z0 = 7.75e-3;
+z0 = R-d+lambda;
 y_median = floor((ymax-ymin)/2/dy)+1;
 x_median=floor(length(x)/2)+1;
 
