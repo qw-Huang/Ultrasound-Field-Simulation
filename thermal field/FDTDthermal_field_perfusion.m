@@ -8,39 +8,31 @@ delta_x=dz;  %1e-4;
 xx=x(98:417);   %只取组织部分 x =±0.04
 gridNum_x=length(z);  %1700;
 gridNum_r=length(xx);  %1000;
-times_heating=19;
+times_heating=2;
 nt_heating=times_heating/delta_t;
-times_cooling=15;
+times_cooling=0;
 nt_cooling=times_cooling/delta_t;
 times=nt_heating+nt_cooling;
 pressure_interest_area=squeeze(p_abs(98:417,y_index,:)); %只取组织部分 x =±0.04
 pressure_xr=pressure_interest_area';%矩阵转置
 
-%  Tissue parameters initialization
-param_water = struct('c',1500,'rou',1000,'alpha',0,'B_A',4.96,'Kt',0.615,'Ct',4180,'Wb',0);
-param_skin= struct('c',1645,'rou',1200,'alpha',40 / 1e6 * f,'B_A',0,'Kt',0.377,'Ct',3410,'Wb',0.583);
-param_fat = struct('c',1445,'rou',921,'alpha',7 / 1e6 * f,'B_A',10.3,'Kt',0.248,'Ct',2490,'Wb',1);
-param_muscle = struct('c',1600,'rou',1100,'alpha',4.5 / 1e6 * f ,'B_A',10.3,'Kt',0.5,'Ct',3800,'Wb',0.5);
+% %  Tissue parameters initialization
+% param_water = struct('c',1500,'rou',1000,'alpha',0,'B_A',4.96,'Kt',0.615,'Ct',4180,'Wb',0);
+% param_skin= struct('c',1645,'rou',1200,'alpha',40 / 1e6 * f,'B_A',0,'Kt',0.377,'Ct',3410,'Wb',0.583);
+% param_fat = struct('c',1445,'rou',921,'alpha',7 / 1e6 * f,'B_A',10.3,'Kt',0.248,'Ct',2490,'Wb',1);
+% param_muscle = struct('c',1600,'rou',1100,'alpha',4.5 / 1e6 * f ,'B_A',10.3,'Kt',0.5,'Ct',3800,'Wb',0.5);
+
+Kt=medium2.thermalconductivity;
+rou=medium2.density;
+Ct=medium2.specificheat;
+c=medium2.soundspeed;
+dBperNeper = 20 * log10(exp(1));
+alpha=medium2.attenuationdBcmMHz/dBperNeper*100*(f0/1e6)^1.1;
+Wb=medium2.bloodperfusion;
+
 Cb = 3800;  
 T_ambient=310;
-% %  generate tissue_param_matrix  判断在哪个区间，medium取什么值
-% 
-%     for i =1:1000%n_water %in range(int(water_widelta_th / delta_x)): 水的层厚
-%         for j =1:gridNum_r
-%             medium = param_water;
-%         end
-%     end
-%     for i =n_water:n_skin %皮肤的层厚in range(int(water_widelta_th / delta_x), int((water_widelta_th + skin_widelta_th) / delta_x)):
-%         for j =1:gridNum_r
-%            medium = param_skin;
-%         end
-%     end
-%     for i=n_skin:gridNum_x%剩余部分是脂肪 in range(int((range_x - fat_widelta_th) / delta_x), gridNum_x):
-%         for j=1:gridNum_r
-            medium= param_muscle;
-%         end
-%     end
-%     
+     
 tic
 c1 = -1 / (12 * delta_r^2);
 d1 = 4 / (3 * delta_r^2);
@@ -72,11 +64,11 @@ for i =1:gridNum_r
     end
 end
 % coefficients in BHTE
-m = (2 * medium.Kt * delta_t) / (medium.rou * medium.Ct);
+m = (2 * Kt * delta_t) / (rou * Ct);
 n = m / (12 * delta_x^2);
-o = 2 * medium.Wb * Cb * delta_t / (medium.rou * medium.Ct);
+o = 2 * Wb * Cb * delta_t / (rou * Ct);
 q = -5 / (2 * delta_r^2) - 5 / (2 * delta_x^2) - o / m; %血流灌注
-s =2 * delta_t * medium.alpha / ( medium.Ct * medium.c * (medium.rou)^2);
+s =2 * delta_t * alpha / ( Ct * c * (rou)^2);
 % generate matrix Ta
 Ta = T_ambient * ones(gridNum_x,gridNum_r);
 T0 = T_ambient * ones(gridNum_x,gridNum_r);
