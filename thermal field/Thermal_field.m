@@ -15,6 +15,11 @@ attenuationNeperspermeter=medium.attenuationdBcmMHz/dBperNeper*100*(f0/1e6)^1.1;
 alpha=attenuationNeperspermeter;
 Cb = 3800;  
 T_ambient=310;
+Kt=medium.thermalconductivity;
+rou=medium.density;
+Ct=medium.specificheat;
+c=medium.soundspeed;
+
 %% BHTE parameters
 c1 = -1 / (12 * delta_r^2);
 d1 = 4 / (3 * delta_r^2);
@@ -42,11 +47,11 @@ for i =1:gridNum_r
     end
 end
 % coefficients in BHTE
-m = (2 * medium.Kt * delta_t) / (medium.rou * medium.Ct);
+m = (2 * Kt * delta_t) / (rou * Ct);
 n = m / (12 * delta_x^2);
 % o = 2 * medium.Wb * Cb * delta_t / (medium.rou * medium.Ct);
 q = -5 / (2 * delta_r^2) - 5 / (2 * delta_x^2);% - o / mÈ¥µôÑªÁ÷¹à×¢
-s =2 * delta_t * alpha / ( medium.Ct * medium.c * (medium.rou)^2);
+s =2 * delta_t * alpha / ( Ct * c * (rou)^2);
 % generate matrix Ta
 % Ta = T_ambient * ones(gridNum_x,gridNum_r);
 T0 = T_ambient * ones(gridNum_x,gridNum_r);
