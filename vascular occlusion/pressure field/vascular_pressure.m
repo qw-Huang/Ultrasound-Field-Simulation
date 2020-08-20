@@ -22,17 +22,17 @@ medium6 = set_medium('muscle');
 f0=1e6;
 lambda = medium1.soundspeed/f0;
 u=normal_velocity(P,R,a,hole_a,medium1.density,medium1.soundspeed);
-depth=0.055; %组织深度
+depth=0.0575; %组织深度
 z0=R-d+lambda;
 z_interface1=R-depth;
 z_interface2=z_interface1+2e-3;
 z_interface3=z_interface2+15e-3;
 z_interface4=z_interface3+38e-3;
-z_interface5=z_interface4+5e-3;
+z_interface5=z_interface4+5e-3; %vascular diameter
 %划分网格点
-dx=lambda/6;
-dy=lambda/6;
-dz=lambda/6;
+dx=5e-4;%lambda/6;
+dy=5e-4;%lambda/6;
+dz=5e-4;%lambda/6;
 xmin=-1.1*a;
 xmax=-xmin;
 ymin=xmin;
@@ -123,10 +123,19 @@ axial_dB=z(max(axial_dB_index))-z(min(axial_dB_index));
 radial_dB_index=find(p_abs(:,y_index,z_index)>=0.5*p_asa_max);
 radial_dB=x(max(radial_dB_index))-x(min(radial_dB_index));
 
+% figure();
+% surf(z*1000, x*1000, squeeze(p_abs(:,y_index,:)));
+% xlabel('z (mm)');
+% ylabel('x (mm)');
+% axis equal;
+% shading interp;
+% title('vascular');
+% colormap(jet);
+xx=x(83:579);   %只取组织部分 x =±0.062
+pressure_interest_area=squeeze(p_abs(83:579,y_index,:)); %只取组织部分 x =±0.04
+pressure_xr=pressure_interest_area;%
 figure();
-surf(z*1000, x*1000, squeeze(p_abs(:,y_index,:)));
-xlabel('z (mm)');
-ylabel('x (mm)');
-axis equal;
+surf(z,xx,pressure_xr);
 shading interp;
-title('vascular');
+axis equal;
+colormap(jet);
